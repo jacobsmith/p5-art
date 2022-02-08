@@ -6,7 +6,7 @@ function setup() {
   canvas=createCanvas(w, h);
   ds = new PenroseLSystem();
   //please, play around with the following line
-  ds.simulate(6);
+  ds.simulate(5);
   frameRate(1);
 }
 

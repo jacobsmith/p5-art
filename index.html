@@ -8,12 +8,13 @@
       body {
         /* background: white; */
         background: black;
-        transform: rotate(-2deg);
+        /* transform: rotate(-0.7deg); */
       }
     </style>
 
     <script src="p5.js"></script>
     <script src="mask.js"></script>
+    <script src="keyhandler.js"></script>
     <!-- <script src="tile.js"></script> -->
 
   </head>
@@ -21,12 +22,41 @@
   <body>
     <script>
       const files = [
-        'clock.js',
+        'rectangles.js',
         'rings.js',
+        'clock.js',
         'grids-and-arcs.js',
         'l-system.js',
         'tile.js',
       ];
+
+      function increaseFile() {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+
+        const key = parseInt(params['file'] || '0');
+
+        let filename = files[key % files.length];
+        console.log(filename)
+        const script = document.createElement('script');
+        script.src = filename;
+        document.body.appendChild(script);
+        document.location.href = document.location.href.split('?')[0] + '?file=' + (key + 1)
+      }
+      
+      function decreaseFile() {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+
+        const key = parseInt(params['file'] || '0');
+
+        let filename = files[key % files.length];
+        console.log(filename)
+        const script = document.createElement('script');
+        script.src = filename;
+        document.body.appendChild(script);
+        document.location.href = document.location.href.split('?')[0] + '?file=' + (key + 1)
+      }
 
       (async() => {
         const urlSearchParams = new URLSearchParams(window.location.search);
@@ -42,17 +72,6 @@
         // await new Promise(r => setTimeout(r, 5000));
         // document.location.href = document.location.href.split('?')[0] + '?file=' + (key + 1)
       })();
-
-      // (async () => {
-      //   let i = 0;
-      //   let filename = files[i];
-      //   const script = document.createElement('script');
-      //   script.src = filename;
-      //   document.body.appendChild(script);
-      //   await new Promise(r => setTimeout(r, 20000));
-      //   script.remove();
-      //   i += 1;
-      // })();
     </script>
   </body>
 </html>

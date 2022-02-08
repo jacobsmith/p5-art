@@ -24,7 +24,11 @@ function drawText(str, x, y) {
   textFont('Verdana')
   fill(255);
   textSize(52);
-  text(str, x - 20, y + 20);
+  if (str == '12') {
+    text(str, x - 40, y + 10);
+  } else {
+    text(str, x - 20, y + 20);
+  }
 }
 
 function draw() {

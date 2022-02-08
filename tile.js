@@ -7,7 +7,7 @@ function setup() {
   ds = new PenroseLSystem();
   //please, play around with the following line
   ds.simulate(6);
-  // frameRate(0.5);
+  frameRate(1);
 }
 
 function draw() {
@@ -82,11 +82,13 @@ PenroseLSystem.prototype.iterate = function() {
     this.production = newProduction;
 }
 
+let colors = [];
+
 //convert production string to a turtle graphic
 PenroseLSystem.prototype.render = function () {
     translate(width / 2, height / 2);
 
-    this.steps += 20;
+    this.steps += 5;
     if(this.steps > this.production.length) {
       this.steps = this.production.length;
     }
@@ -96,7 +98,10 @@ PenroseLSystem.prototype.render = function () {
 
       //'W', 'X', 'Y', 'Z' symbols don't actually correspond to a turtle action
       if( step == 'F') {
-        stroke(255, 60);
+        let activeColor = colors[i] || color(random(255), random(255), random(255))
+        colors[i] = colors[i] || activeColor;
+        stroke(activeColor)
+        // stroke(255, 60);
         strokeWeight(8)
         for(let j=0; j < this.repeats; j++) {
           line(0, 0, 0, -this.drawLength);

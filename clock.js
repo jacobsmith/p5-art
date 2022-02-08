@@ -5,11 +5,13 @@ let hoursRadius;
 let clockDiameter;
 
 function setup() {
-  createCanvas(720, 400);
+  var w = window.innerWidth;
+  var h = window.innerHeight;  
+  canvas=createCanvas(w, h);
   stroke(255);
 
-  let radius = min(width, height) / 2;
-  secondsRadius = radius * 0.71;
+  let radius = (min(width, height) / 2) * 0.8;
+  secondsRadius = radius * 0.65;
   minutesRadius = radius * 0.6;
   hoursRadius = radius * 0.5;
   clockDiameter = radius * 1.7;
@@ -18,14 +20,21 @@ function setup() {
   cy = height / 2;
 }
 
+function drawText(str, x, y) {
+  textFont('Verdana')
+  fill(255);
+  textSize(52);
+  text(str, x - 20, y + 20);
+}
+
 function draw() {
-  background(230);
+  background(0);
 
   // Draw the clock background
   noStroke();
-  fill(244, 122, 158);
-  ellipse(cx, cy, clockDiameter + 25, clockDiameter + 25);
-  fill(237, 34, 93);
+  fill(255, 255, 255, 128);
+  ellipse(cx, cy, clockDiameter + 10, clockDiameter + 10);
+  fill(150, 115, 38);
   ellipse(cx, cy, clockDiameter, clockDiameter);
 
   // Angles for sin() and cos() start at 3 o'clock;
@@ -37,20 +46,31 @@ function draw() {
   // Draw the hands of the clock
   stroke(255);
   strokeWeight(1);
-  line(cx, cy, cx + cos(s) * secondsRadius, cy + sin(s) * secondsRadius);
-  strokeWeight(2);
-  line(cx, cy, cx + cos(m) * minutesRadius, cy + sin(m) * minutesRadius);
+  line(cx, cy, cx + cos(s) * secondsRadius * 0.8, cy + sin(s) * secondsRadius * 0.8);
   strokeWeight(4);
+  line(cx, cy, cx + cos(m) * minutesRadius, cy + sin(m) * minutesRadius);
+  strokeWeight(6);
   line(cx, cy, cx + cos(h) * hoursRadius, cy + sin(h) * hoursRadius);
 
   // Draw the minute ticks
   strokeWeight(2);
   beginShape(POINTS);
-  for (let a = 0; a < 360; a += 6) {
+  for (let a = 0; a < 360; a += 30) {
     let angle = radians(a);
     let x = cx + cos(angle) * secondsRadius;
     let y = cy + sin(angle) * secondsRadius;
-    vertex(x, y);
+
+    if (a == 0) {
+      drawText('3', x, y)
+    } else if (a == 90) {
+      drawText('6', x, y)
+    } else if (a == 180) {
+      drawText('9', x, y)
+    } else if (a == 270) {
+      drawText('12', x, y)
+    } else {
+      circle(x, y, 8);
+    }
   }
   endShape();
 }

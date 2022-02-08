@@ -31,14 +31,16 @@ function setup() {
 }
 
 function draw() {
+  for (i = 0; i < 1; i++) {
+    // draw the current character in the string:
+    drawIt(thestring[whereinstring]);
 
-  // draw the current character in the string:
-  drawIt(thestring[whereinstring]);
+    // increment the point for where we're reading the string.
+    // wrap around at the end.
+    whereinstring++;
+    if (whereinstring > thestring.length-1) whereinstring = 0;
 
-  // increment the point for where we're reading the string.
-  // wrap around at the end.
-  whereinstring++;
-  if (whereinstring > thestring.length-1) whereinstring = 0;
+  }
 
   maskTheWall();
 }

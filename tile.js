@@ -6,7 +6,8 @@ function setup() {
   canvas=createCanvas(w, h);
   ds = new PenroseLSystem();
   //please, play around with the following line
-  ds.simulate(5);
+  ds.simulate(6);
+  // frameRate(0.5);
 }
 
 function draw() {
@@ -26,7 +27,7 @@ function PenroseLSystem() {
     this.ruleZ = "--YF++++WF[+ZF++++XF]--XF";
 
     //please play around with the following two lines
-    this.startLength = 460.0;
+    this.startLength = 1860.0;
     this.theta = TWO_PI / 10.0; //36 degrees, try TWO_PI / 6.0, ...
     this.reset();
 }
@@ -96,6 +97,7 @@ PenroseLSystem.prototype.render = function () {
       //'W', 'X', 'Y', 'Z' symbols don't actually correspond to a turtle action
       if( step == 'F') {
         stroke(255, 60);
+        strokeWeight(8)
         for(let j=0; j < this.repeats; j++) {
           line(0, 0, 0, -this.drawLength);
           noFill();

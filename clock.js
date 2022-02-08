@@ -39,7 +39,12 @@ function draw() {
 
   // Angles for sin() and cos() start at 3 o'clock;
   // subtract HALF_PI to make them start at the top
-  let s = map(second(), 0, 60, 0, TWO_PI) - HALF_PI;
+
+  // get smooth motion of secondhand
+  let milliseconds = new Date().getMilliseconds();
+  let msOffset = map(milliseconds, 0, 1000, 0, HALF_PI / 15);
+
+  let s = map(second(), 0, 60, 0, TWO_PI) - HALF_PI + msOffset;
   let m = map(minute() + norm(second(), 0, 60), 0, 60, 0, TWO_PI) - HALF_PI;
   let h = map(hour() + norm(minute(), 0, 60), 0, 24, 0, TWO_PI * 2) - HALF_PI;
 

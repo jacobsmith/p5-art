@@ -33,6 +33,4 @@ function handleKeyPress(e) {
   } else if (e.key == 'ArrowLeft') {
     decreaseFile();
   } 
-
-  console.log(e);
 }

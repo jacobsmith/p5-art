@@ -30,48 +30,40 @@
         'tile.js',
       ];
 
-      function increaseFile() {
+      // initial load
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      const params = Object.fromEntries(urlSearchParams.entries());
+
+      const key = parseInt(params['file'] || '0');
+
+      let filename = files[key % files.length];
+      console.log(filename)
+      const script = document.createElement('script');
+      script.src = filename;
+      document.body.appendChild(script);
+      // end initial load
+
+      function changeFile(increment = 1) {
         const urlSearchParams = new URLSearchParams(window.location.search);
         const params = Object.fromEntries(urlSearchParams.entries());
-
         const key = parseInt(params['file'] || '0');
 
-        let filename = files[key % files.length];
-        console.log(filename)
-        const script = document.createElement('script');
-        script.src = filename;
-        document.body.appendChild(script);
-        document.location.href = document.location.href.split('?')[0] + '?file=' + (key + 1)
+        document.location.href = document.location.href.split('?')[0] + '?file=' + (key + increment)
+      }
+
+      function increaseFile() {
+        changeFile(1);
       }
       
       function decreaseFile() {
-        const urlSearchParams = new URLSearchParams(window.location.search);
-        const params = Object.fromEntries(urlSearchParams.entries());
-
-        const key = parseInt(params['file'] || '0');
-
-        let filename = files[key % files.length];
-        console.log(filename)
-        const script = document.createElement('script');
-        script.src = filename;
-        document.body.appendChild(script);
-        document.location.href = document.location.href.split('?')[0] + '?file=' + (key + 1)
+        changeFile(-1)
       }
 
-      (async() => {
-        const urlSearchParams = new URLSearchParams(window.location.search);
-        const params = Object.fromEntries(urlSearchParams.entries());
-
-        const key = parseInt(params['file'] || '0');
-
-        let filename = files[key % files.length];
-        console.log(filename)
-        const script = document.createElement('script');
-        script.src = filename;
-        document.body.appendChild(script);
-        // await new Promise(r => setTimeout(r, 5000));
-        // document.location.href = document.location.href.split('?')[0] + '?file=' + (key + 1)
-      })();
+      // cycle through
+      // (async() => {
+      //   await new Promise(r => setTimeout(r, 5000));
+      //   changeFile();
+      // })();
     </script>
   </body>
 </html>

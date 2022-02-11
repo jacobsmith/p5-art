@@ -12,6 +12,7 @@ let a2 = 0;
 let a1_v = 0;
 let a2_v = 0;
 let g = 0.5;
+let showPendulum = true;
 
 let px2 = -1;
 let py2 = -1;
@@ -30,6 +31,12 @@ function setup() {
   a2 = PI / 2;
   cx = width / 2;
   cy = height / 2;
+}
+
+function keyPressed() {
+  if (keyCode == 32) {
+    showPendulum = !showPendulum;
+  }
 }
 
 let trail = [];
@@ -86,13 +93,15 @@ function draw() {
   let x2 = x1 + r2 * sin(a2);
   let y2 = y1 + r2 * cos(a2);
 
-  line(0, 0, x1, y1);
-  fill(255);
-  ellipse(x1, y1, m1, m1);
+  if (showPendulum) {
+    line(0, 0, x1, y1);
+    fill(255);
+    ellipse(x1, y1, m1, m1);
 
-  line(x1, y1, x2, y2);
-  fill(255);
-  ellipse(x2, y2, m2, m2);
+    line(x1, y1, x2, y2);
+    fill(255);
+    ellipse(x2, y2, m2, m2);
+  }
  
   a1_v += a1_a;
   a2_v += a2_a;

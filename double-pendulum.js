@@ -13,6 +13,7 @@ let a1_v = 0;
 let a2_v = 0;
 let g = 0.5;
 let showPendulum = true;
+let trail = [];
 
 let px2 = -1;
 let py2 = -1;
@@ -39,7 +40,6 @@ function keyPressed() {
   }
 }
 
-let trail = [];
 
 class Trail {
   constructor(x, y) {

@@ -1,6 +1,6 @@
 const circles = [];
 let maxAge = 100;
-const NUM_CIRCLES = 20;
+const NUM_CIRCLES = 10;
 const MAX_WIDTH = 60;
 let showColor = true;
 

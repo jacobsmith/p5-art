@@ -1,7 +1,8 @@
 const circles = [];
 let maxAge = 100;
-const NUM_CIRCLES = 50;
+const NUM_CIRCLES = 20;
 const MAX_WIDTH = 60;
+let showColor = true;
 
 function setup() {
   var w = window.innerWidth;
@@ -46,14 +47,24 @@ class Circle {
   draw() {
     if (this.age < 0) { return; }
     noFill();
-    const alpha = map(this.age, 0, 100, 128, 0, true);
-    stroke(255, alpha);
+    strokeWeight(map(this.age, 0, 100, 4, 0));
+    
+    const alpha = map(this.age, 0, 100, 255, 0, true);
+
+    let circleColor = color(255, alpha);
+    if (showColor) {
+      circleColor = color(noise(this.x) * 255, noise(this.y) * 255, noise(this.r) * 255, alpha);
+    }
+
+    stroke(circleColor);
     ellipse(this.x, this.y, this.r, this.r);
   }
 }
 
 function keyPressed() {
-  if (keyCode == 38) {
+  if (keyCode == 32) {
+    showColor = !showColor;
+  } else if (keyCode == 38) {
     // up
     maxAge += 10;
   } else if (keyCode == 40) {

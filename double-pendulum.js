@@ -109,10 +109,15 @@ function draw() {
   a2 += a2_v;
 
   if (random(0, 1000) > 998) {
-    a1_v *= 1.1
-    a2_v *= 1.1
+    if (a1_v < 0.1) {
+      a1_v *= 1.1
+      a2_v *= 1.1
+    }
     console.log('kick')
   }
+
+  a1_v = Math.min(a1_v, 0.2);
+  a2_v = Math.min(a2_v, 0.2);
 
   // a1_v *= 0.99;
   // a2_v *= 0.99;

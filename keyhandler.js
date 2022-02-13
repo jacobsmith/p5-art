@@ -7,6 +7,17 @@ function toggleRotateMode() {
   rotateMode = !rotateMode;
 }
 
+function toggleMenu() {
+  const menu = document.getElementById('menu');
+
+  console.log('toggleMenu');
+  if (menu.style.display == 'none') {
+    menu.style.display = '';
+  } else {
+    menu.style.display = 'none';
+  }
+}
+
 function rotateModeHandle(e) {
   if (e.key == 'ArrowRight') {
     rotation = rotation + 0.1
@@ -16,7 +27,7 @@ function rotateModeHandle(e) {
     document.body.style.transform = `rotate(${rotation}deg)`
   } else if (e.key == 'r') {
     toggleRotateMode(); 
-  }
+  } 
 }
 
 function handleKeyPress(e) {
@@ -32,5 +43,7 @@ function handleKeyPress(e) {
     increaseFile();
   } else if (e.key == 'ArrowLeft') {
     decreaseFile();
-  } 
+  } else if (e.key == 'm') {
+    toggleMenu();
+  }
 }

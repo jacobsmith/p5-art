@@ -10,6 +10,16 @@
         background: black;
         /* transform: rotate(-0.7deg); */
       }
+
+      #menu {
+        position: absolute;
+        list-style-type: none;
+      }
+
+      #menu a {
+        color: white;
+        text-decoration: none;
+      }
     </style>
 
     <script src="p5.js"></script>
@@ -23,6 +33,9 @@
   </head>
   
   <body>
+    <ul id="menu" style="display: none;">
+    </ul>
+
     <script>
       const files = [
         'rings.js',
@@ -40,6 +53,19 @@
       //   'meaningful-image.js',
       //   'sketch.js',
       ];
+
+      const menu = document.getElementById('menu');
+      for (let i = 0; i < files.length; i++) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+
+        a.href = '/?file=' + i;
+        a.innerText = files[i];
+
+        li.appendChild(a);
+        menu.appendChild(li);
+      }
+
 
       // initial load
       const urlSearchParams = new URLSearchParams(window.location.search);

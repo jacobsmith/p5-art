@@ -60,6 +60,7 @@ class Trail {
     let green = constrain(abs(50 - percentDecay) * 5, 0, 255);
 
     noFill();
+    strokeCap(SQUARE);
     stroke(red, green, blue, alpha);
     strokeWeight(8);
     line(this.x, this.y, nextPoint.x, nextPoint.y);

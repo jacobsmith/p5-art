@@ -23,33 +23,40 @@ function draw() {
   }
 }
 
+let isChild = true;
 class Circle {
-  constructor() {
-    this.setup();
+  constructor(x, y, age, isAChild) {
+    this.setup(x, y, age, isAChild);
   }
 
-  setup() {
-    this.x = random(MAX_WIDTH, width - MAX_WIDTH);
-    this.y = random(MAX_WIDTH, height - MAX_WIDTH);
-    this.r = random(5, MAX_WIDTH);
-    this.age = random(-maxAge, 0);
+  setup(x, y, age, isAChild) {
+    this.x = x || random(MAX_WIDTH, width - MAX_WIDTH);
+    this.y = y || random(MAX_WIDTH, height - MAX_WIDTH);
+    this.r = isAChild ? 0 : random(5, MAX_WIDTH);
+    this.age = age || random(-maxAge, 0);
+    this.children = [];
   }
 
   update() {
     this.age += 1;
     this.r += random(0.2, 0.8);
 
-    if (this.age > maxAge) {
-      this.setup();
+    if (this.age > maxAge + 200) {
+      return this.setup();
+    }
+
+    if (random() < 0.01 && (this.age < maxAge * 0.8)) {
+      this.children.push(new Circle(this.x, this.y, this.age, isChild));
     }
   }
 
   draw() {
     if (this.age < 0) { return; }
+
     noFill();
     strokeWeight(map(this.age, 0, 100, 4, 0));
     
-    const alpha = map(this.age, 0, 100, 255, 0, true);
+    const alpha = map(this.age, 0, 100, 255, 0);
 
     let circleColor = color(255, alpha);
     if (showColor) {
@@ -58,6 +65,11 @@ class Circle {
 
     stroke(circleColor);
     ellipse(this.x, this.y, this.r, this.r);
+
+    for (let child of this.children) {
+      child.update();
+      child.draw();
+    }
   }
 }
 

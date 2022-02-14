@@ -11,106 +11,27 @@ function setup() {
 
   capture = createCapture(VIDEO);
   capture.hide();
-
-  // saturationSlider = createSlider(0, 255, 100);
-  // saturationSlider.position(50, 300);
-  // saturationSlider.style('width', '80px')
 }
-
-let lastSaturationSliderValue = 0;
 
 function draw() {
   background(0);
 
-  // if (img) {
-    let updatedImage = createImage(capture.width, capture.height);
-    let trueVideo = createImage(capture.width, capture.height)
-    trueVideo.copy(capture, 0, 0, capture.width, capture.height, 0, 0, capture.width, capture.height);
+  let updatedImage = createImage(capture.width, capture.height);
+  let trueVideo = createImage(capture.width, capture.height)
+  trueVideo.copy(capture, 0, 0, capture.width, capture.height, 0, 0, capture.width, capture.height);
 
-    trueVideo.loadPixels();
-    updatedImage.loadPixels();
-    capture.loadPixels();
-   
-    // updatedImage = getPotentialImage(capture, updatedImage);
+  trueVideo.loadPixels();
+  updatedImage.loadPixels();
+  capture.loadPixels();
 
-    const filteredImage = apply_sobel_filter(capture);
-    image(filteredImage, updatedImage.width, 0, updatedImage.width, updatedImage.height);
+  const filteredImage = apply_sobel_filter(capture);
+  image(filteredImage, updatedImage.width, 0, updatedImage.width, updatedImage.height);
 
+  updatedImage = blurImage(filteredImage, updatedImage, capture)
+  updatedImage.updatePixels();
 
-    // filteredImage.loadPixels();
-
-
-    // get a "blur" of pixels - if above a threshold, they all get to be included
-    const kernel = [
-      [1, 1, 1],
-      [1, 1, 1],
-      [1, 1, 1],
-    ];
-    
-    for (let x = 0; x < filteredImage.width; x++) {
-      for (let y = 0; y < filteredImage.height; y++) {
-        let index = (x + y * capture.width) * 4
-
-        let sum = 0;
-
-        // kx, ky variables for iterating over the kernel
-        // kx, ky have three different values: -1, 0, 1
-        for (kx = -1; kx <= 1; kx++) {
-          for (ky = -1; ky <= 1; ky++) {
-            let xpos = x + kx;
-            let ypos = y + ky;
-            
-            // since our image is grayscale, 
-            // RGB values are identical
-            // we retrieve the red value for this example 
-            // (green and blue work as well)
-    
-            const r = filteredImage.pixels[index];
-            const g = filteredImage.pixels[index + 1];
-            const b = filteredImage.pixels[index + 2];
-
-            val = (r + g + b);
-
-            // accumulate the  kernel sum
-            // kernel is a 3x3 matrix
-            // kx and ky have values -1, 0, 1
-            // if we add 1 to kx and ky, we get 0, 1, 2
-            // with that we can use it to iterate over kernel
-            // and calculate the accumulated sum
-            sum += kernel[kx+1][ky+1] * val;
-          }
-        }
-
-        // if ((x + y) % 100 == 0) {
-        //   console.log(sum)
-        // }
-
-
-    //     // const r = filteredImage.pixels[index];
-    //     // const g = filteredImage.pixels[index + 1];
-    //     // const b = filteredImage.pixels[index + 2];
-
-        if (((sum / 9) > 128) || isEnclosed(filteredImage, x, y)) {
-          updatedImage.pixels[index + 0] = trueVideo.pixels[index + 0];
-          updatedImage.pixels[index + 1] = trueVideo.pixels[index + 1];
-          updatedImage.pixels[index + 2] = trueVideo.pixels[index + 2];
-          updatedImage.pixels[index + 3] = 255;
-        } else {
-          updatedImage.pixels[index + 0] = capture.pixels[index + 0];
-          updatedImage.pixels[index + 1] = capture.pixels[index + 1];
-          updatedImage.pixels[index + 2] = capture.pixels[index + 2];
-          updatedImage.pixels[index + 3] = 0;
-        }
-      }
-    }
-
-
-    updatedImage.updatePixels();
-    
-    image(updatedImage, 0, 0, updatedImage.width, updatedImage.height);
-    image(trueVideo, 0, updatedImage.height, updatedImage.width, updatedImage.height);
-    lastSaturationSliderValue = 1;
-  // }
+  image(updatedImage, 0, 0, updatedImage.width, updatedImage.height);
+  image(trueVideo, 0, updatedImage.height, updatedImage.width, updatedImage.height);
 }
 
 function isEnclosed(filteredImage, x, y) {
@@ -284,4 +205,60 @@ function apply_sobel_filter(img) {
   }
   img.updatePixels();
   return img;
+}
+
+function blurImage(filteredImage, updatedImage, capture) {
+    // get a "blur" of pixels - if above a threshold, they all get to be included
+    const kernel = [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ];
+    
+    for (let x = 0; x < filteredImage.width; x++) {
+      for (let y = 0; y < filteredImage.height; y++) {
+        let index = (x + y * capture.width) * 4
+
+        let sum = 0;
+
+        // kx, ky variables for iterating over the kernel
+        // kx, ky have three different values: -1, 0, 1
+        for (kx = -1; kx <= 1; kx++) {
+          for (ky = -1; ky <= 1; ky++) {
+            // since our image is grayscale, 
+            // RGB values are identical
+            // we retrieve the red value for this example 
+            // (green and blue work as well)
+    
+            const r = filteredImage.pixels[index];
+            const g = filteredImage.pixels[index + 1];
+            const b = filteredImage.pixels[index + 2];
+
+            val = (r + g + b);
+
+            // accumulate the  kernel sum
+            // kernel is a 3x3 matrix
+            // kx and ky have values -1, 0, 1
+            // if we add 1 to kx and ky, we get 0, 1, 2
+            // with that we can use it to iterate over kernel
+            // and calculate the accumulated sum
+            sum += kernel[kx+1][ky+1] * val;
+          }
+        }
+
+        if (((sum / 9) > 128) || isEnclosed(filteredImage, x, y)) {
+          updatedImage.pixels[index + 0] = trueVideo.pixels[index + 0];
+          updatedImage.pixels[index + 1] = trueVideo.pixels[index + 1];
+          updatedImage.pixels[index + 2] = trueVideo.pixels[index + 2];
+          updatedImage.pixels[index + 3] = 255;
+        } else {
+          updatedImage.pixels[index + 0] = capture.pixels[index + 0];
+          updatedImage.pixels[index + 1] = capture.pixels[index + 1];
+          updatedImage.pixels[index + 2] = capture.pixels[index + 2];
+          updatedImage.pixels[index + 3] = 0;
+        }
+      }
+    }
+
+  return updatedImage;
 }

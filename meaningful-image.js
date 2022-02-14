@@ -2,7 +2,7 @@ let img;
 let saturationSlider;
 
 function setup() {
-  img = loadImage('fish.jpg');
+  // img = loadImage('fish.jpg');
   var w = window.innerWidth;
   var h = window.innerHeight;  
   canvas=createCanvas(w, h);
@@ -19,18 +19,10 @@ function setup() {
 
 let lastSaturationSliderValue = 0;
 
-let lastX, lastY;
-
 function draw() {
   background(0);
 
-  if (mouseX !== lastX && mouseY !== lastY) {
-    console.log(capture.get(mouseX, mouseY));
-    lastX = mouseX;
-    lastY = mouseY;
-  }
-
-  if (img) {
+  // if (img) {
     let updatedImage = createImage(capture.width, capture.height);
     let trueVideo = createImage(capture.width, capture.height)
     trueVideo.copy(capture, 0, 0, capture.width, capture.height, 0, 0, capture.width, capture.height);
@@ -44,19 +36,61 @@ function draw() {
     const filteredImage = apply_sobel_filter(capture);
     image(filteredImage, updatedImage.width, 0, updatedImage.width, updatedImage.height);
 
+
     // filteredImage.loadPixels();
 
 
+    // get a "blur" of pixels - if above a threshold, they all get to be included
+    const kernel = [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ];
     
     for (let x = 0; x < filteredImage.width; x++) {
       for (let y = 0; y < filteredImage.height; y++) {
         let index = (x + y * capture.width) * 4
 
-        const r = filteredImage.pixels[index];
-        const g = filteredImage.pixels[index + 1];
-        const b = filteredImage.pixels[index + 2];
+        let sum = 0;
 
-        if (((r + g + b) / 3) > 25) {
+        // kx, ky variables for iterating over the kernel
+        // kx, ky have three different values: -1, 0, 1
+        for (kx = -1; kx <= 1; kx++) {
+          for (ky = -1; ky <= 1; ky++) {
+            let xpos = x + kx;
+            let ypos = y + ky;
+            
+            // since our image is grayscale, 
+            // RGB values are identical
+            // we retrieve the red value for this example 
+            // (green and blue work as well)
+    
+            const r = filteredImage.pixels[index];
+            const g = filteredImage.pixels[index + 1];
+            const b = filteredImage.pixels[index + 2];
+
+            val = (r + g + b);
+
+            // accumulate the  kernel sum
+            // kernel is a 3x3 matrix
+            // kx and ky have values -1, 0, 1
+            // if we add 1 to kx and ky, we get 0, 1, 2
+            // with that we can use it to iterate over kernel
+            // and calculate the accumulated sum
+            sum += kernel[kx+1][ky+1] * val;
+          }
+        }
+
+        // if ((x + y) % 100 == 0) {
+        //   console.log(sum)
+        // }
+
+
+    //     // const r = filteredImage.pixels[index];
+    //     // const g = filteredImage.pixels[index + 1];
+    //     // const b = filteredImage.pixels[index + 2];
+
+        if (((sum / 9) > 128) || isEnclosed(filteredImage, x, y)) {
           updatedImage.pixels[index + 0] = trueVideo.pixels[index + 0];
           updatedImage.pixels[index + 1] = trueVideo.pixels[index + 1];
           updatedImage.pixels[index + 2] = trueVideo.pixels[index + 2];
@@ -70,12 +104,74 @@ function draw() {
       }
     }
 
+
     updatedImage.updatePixels();
     
     image(updatedImage, 0, 0, updatedImage.width, updatedImage.height);
     image(trueVideo, 0, updatedImage.height, updatedImage.width, updatedImage.height);
     lastSaturationSliderValue = 1;
+  // }
+}
+
+function isEnclosed(filteredImage, x, y) {
+  // check if white above
+  // check if white below
+  // check if white left
+  // check if white right
+
+  let hitUp, hitDown, hitLeft, hitRight = false;
+
+  for (let checkY = y; checkY < filteredImage.height; checkY++ ) {
+    let index = (x + checkY * filteredImage.width) * 4
+
+    const r = filteredImage.pixels[index + 0];
+    const g = filteredImage.pixels[index + 1];
+    const b = filteredImage.pixels[index + 2];
+
+    if ((r + g + b) / 3 > 200) {
+      hitUp = true;
+    }
   }
+  
+  for (let checkY = y; checkY > 0; checkY-- ) {
+    let index = (x + checkY * filteredImage.width) * 4
+
+    const r = filteredImage.pixels[index + 0];
+    const g = filteredImage.pixels[index + 1];
+    const b = filteredImage.pixels[index + 2];
+
+    if ((r + g + b) / 3 > 200) {
+      hitDown = true;
+    }
+  }
+  
+  for (let checkX = x; checkX > 0; checkX-- ) {
+    let index = (checkX + y * filteredImage.width) * 4
+
+    const r = filteredImage.pixels[index + 0];
+    const g = filteredImage.pixels[index + 1];
+    const b = filteredImage.pixels[index + 2];
+
+    if ((r + g + b) / 3 > 200) {
+      hitLeft = true;
+    }
+  }
+  
+  for (let checkX = x; checkX < filteredImage.width; checkX++ ) {
+    let index = (checkX + y * filteredImage.width) * 4
+
+    const r = filteredImage.pixels[index + 0];
+    const g = filteredImage.pixels[index + 1];
+    const b = filteredImage.pixels[index + 2];
+
+    if ((r + g + b) / 3 > 200) {
+      hitRight = true;
+    }
+  }
+
+  return hitDown && hitUp && hitLeft && hitRight;
+
+  return false;
 }
 
 function keyPressed() {

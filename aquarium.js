@@ -1,8 +1,13 @@
+import { extractDrawnImage } from "./meaningful-image.js";
+
 const num_fish = 20;
 
 const fishes = [];
 
-function setup() {
+let capture;
+
+window.setup = function() {
+  console.log('in setup');
   var w = window.innerWidth;
   var h = window.innerHeight;  
   canvas=createCanvas(w, h);
@@ -15,28 +20,33 @@ function setup() {
   }
 }
 
-function draw() {
+window.draw = function() {
   background(63, 191, 191);
 
-  for (fish of fishes) {
+  for (let fish of fishes) {
     fish.update();
     fish.draw();
   }
 }
 
-function keyPressed() {
+window.keyPressed = function() {
+  console.log('keyPressed');
   if (keyCode == 32) {
     importPicture();
   }
 }
 
 function importPicture() {
+  console.log('import');
   let img;
   // The capture element is initially smaller than it should be
   if (!img || img.width !== capture.width) {
     img = createImage(capture.width, capture.height);
   }
-  img.copy(capture, 0, 0, capture.width, capture.height, 0, 0, img.width, img.height);
+
+  img = extractDrawnImage(capture);
+
+  // img.copy(capture, 0, 0, capture.width, capture.height, 0, 0, img.width, img.height);
   fishes.push(new Fish(img));
 }
 

@@ -37,6 +37,15 @@
     </ul>
 
     <script>
+      function beSureToLoad(path) {
+        const head = document.getElementsByTagName('head')[0];
+        const script = document.createElement('script');
+        script.src = path;
+        head.appendChild(script);
+      }
+    </script>
+
+    <script>
       const files = [
         'rings.js',
         'clock.js',
@@ -77,6 +86,7 @@
       console.log(filename)
       const script = document.createElement('script');
       script.src = filename;
+      script.type = "module";
       document.body.appendChild(script);
       // end initial load
 

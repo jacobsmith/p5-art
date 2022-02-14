@@ -1,37 +1,56 @@
 let img;
-let saturationSlider;
 
-function setup() {
-  // img = loadImage('fish.jpg');
-  var w = window.innerWidth;
-  var h = window.innerHeight;  
-  canvas=createCanvas(w, h);
+// function setup() {
+//   var w = window.innerWidth;
+//   var h = window.innerHeight;  
+//   canvas=createCanvas(w, h);
 
-  pixelDensity(1);
+//   pixelDensity(1);
 
-  capture = createCapture(VIDEO);
-  capture.hide();
-}
+//   capture = createCapture(VIDEO);
+//   capture.hide();
+// }
 
-function draw() {
-  background(0);
+// function draw() {
+//   background(0);
 
-  let updatedImage = createImage(capture.width, capture.height);
-  let trueVideo = createImage(capture.width, capture.height)
-  trueVideo.copy(capture, 0, 0, capture.width, capture.height, 0, 0, capture.width, capture.height);
+//   let updatedImage = createImage(capture.width, capture.height);
+//   let trueVideo = createImage(capture.width, capture.height)
+//   trueVideo.copy(capture, 0, 0, capture.width, capture.height, 0, 0, capture.width, capture.height);
+
+//   trueVideo.loadPixels();
+//   updatedImage.loadPixels();
+//   capture.loadPixels();
+
+//   const filteredImage = apply_sobel_filter(capture);
+//   image(filteredImage, updatedImage.width, 0, updatedImage.width, updatedImage.height);
+
+//   updatedImage = blurImage(trueVideo, filteredImage, updatedImage, capture)
+//   updatedImage.updatePixels();
+
+//   image(updatedImage, 0, 0, updatedImage.width, updatedImage.height);
+//   image(trueVideo, 0, updatedImage.height, updatedImage.width, updatedImage.height);
+// }
+
+export function extractDrawnImage(video) {
+  let updatedImage = createImage(video.width, video.height);
+  let trueVideo = createImage(video.width, video.height)
+  trueVideo.copy(video, 0, 0, video.width, video.height, 0, 0, video.width, video.height);
 
   trueVideo.loadPixels();
   updatedImage.loadPixels();
-  capture.loadPixels();
+  video.loadPixels();
 
-  const filteredImage = apply_sobel_filter(capture);
-  image(filteredImage, updatedImage.width, 0, updatedImage.width, updatedImage.height);
+  const filteredImage = apply_sobel_filter(video);
+  // image(filteredImage, updatedImage.width, 0, updatedImage.width, updatedImage.height);
 
-  updatedImage = blurImage(filteredImage, updatedImage, capture)
+  updatedImage = blurImage(trueVideo, filteredImage, updatedImage, video)
   updatedImage.updatePixels();
 
-  image(updatedImage, 0, 0, updatedImage.width, updatedImage.height);
-  image(trueVideo, 0, updatedImage.height, updatedImage.width, updatedImage.height);
+  // image(updatedImage, 0, 0, updatedImage.width, updatedImage.height);
+  // image(trueVideo, 0, updatedImage.height, updatedImage.width, updatedImage.height);
+
+  return updatedImage;
 }
 
 function isEnclosed(filteredImage, x, y) {
@@ -178,7 +197,7 @@ function apply_sobel_filter(img) {
   var pixelValue;
   for (x = 1; x < img.width - 1; x++) {
     for (y = 1; y < img.height- 1; y++) {
-      i = x + y * img.width;
+      let i = x + y * img.width;
       xGradient = 0;
       yGradient = 0;
       for (xk = -1; xk <= 1; xk ++) {
@@ -197,7 +216,7 @@ function apply_sobel_filter(img) {
   // copy sobel_array to image pixels;
   for (x = 0; x < img.width; x++) {
     for (y = 0; y < img.height; y++) {
-      i = x + y * img.width;
+      let i = x + y * img.width;
       img.pixels[4 * i] = sobel_array[i];
       img.pixels[4 * i + 1] = sobel_array[i];
       img.pixels[4 * i + 2] = sobel_array[i];
@@ -207,7 +226,7 @@ function apply_sobel_filter(img) {
   return img;
 }
 
-function blurImage(filteredImage, updatedImage, capture) {
+function blurImage(trueVideo, filteredImage, updatedImage, capture) {
     // get a "blur" of pixels - if above a threshold, they all get to be included
     const kernel = [
       [1, 1, 1],
@@ -223,8 +242,8 @@ function blurImage(filteredImage, updatedImage, capture) {
 
         // kx, ky variables for iterating over the kernel
         // kx, ky have three different values: -1, 0, 1
-        for (kx = -1; kx <= 1; kx++) {
-          for (ky = -1; ky <= 1; ky++) {
+        for (let kx = -1; kx <= 1; kx++) {
+          for (let ky = -1; ky <= 1; ky++) {
             // since our image is grayscale, 
             // RGB values are identical
             // we retrieve the red value for this example 
@@ -234,7 +253,7 @@ function blurImage(filteredImage, updatedImage, capture) {
             const g = filteredImage.pixels[index + 1];
             const b = filteredImage.pixels[index + 2];
 
-            val = (r + g + b);
+            let val = (r + g + b);
 
             // accumulate the  kernel sum
             // kernel is a 3x3 matrix

@@ -37,15 +37,6 @@
     </ul>
 
     <script>
-      function beSureToLoad(path) {
-        const head = document.getElementsByTagName('head')[0];
-        const script = document.createElement('script');
-        script.src = path;
-        head.appendChild(script);
-      }
-    </script>
-
-    <script>
       const files = [
         'rings.js',
         'clock.js',
@@ -59,7 +50,7 @@
         'aquarium.js',
         'shrinking-pendulum.js',
         'raindrop-circle.js',
-        'meaningful-image.js',
+        // 'meaningful-image.js',
       //   'sketch.js',
       ];
 
@@ -86,7 +77,10 @@
       console.log(filename)
       const script = document.createElement('script');
       script.src = filename;
-      script.type = "module";
+      if (filename == 'aquarium.js') {
+        script.type = "module";
+      }
+
       document.body.appendChild(script);
       // end initial load
 

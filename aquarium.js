@@ -88,7 +88,7 @@ window.extractFish = function(qrPage) {
 
   fishMask = createGraphics(fishWidth, fishHeight);
   fishMask.fill('rgba(0, 0, 0, 1)');
-  fishMask.ellipse(((2 * fishWidth) / 3) - 40, (fishHeight / 2) - 30, fishWidth * 0.7, fishHeight * 0.65);
+  fishMask.ellipse(((2 * fishWidth) / 3) - 40, (fishHeight / 2), fishWidth * 0.7, fishHeight * 0.65);
   fishMask.triangle(
     // midpoint of tail
     fishWidth * (1/3),

@@ -1,4 +1,9 @@
 import { extractDrawnImage } from "./meaningful-image.js";
+import { QRPage } from "./p5-ar.js";
+
+const ar = document.createElement('script');  
+ar.src = "/ar.js"
+document.head.appendChild(ar);
 
 const num_fish = 20;
 
@@ -6,14 +11,16 @@ const fishes = [];
 
 let capture;
 
+const qrPage = new QRPage();
+
 window.setup = function() {
   console.log('in setup');
   var w = window.innerWidth;
   var h = window.innerHeight;  
   canvas=createCanvas(w, h);
 
-  capture = createCapture(VIDEO);
-  capture.hide();
+  qrPage.setup(canvas);
+  qrPage.debug(true);
 
   for (let i = 0; i < num_fish; i++) {
     fishes.push(new Fish());
@@ -23,31 +30,75 @@ window.setup = function() {
 window.draw = function() {
   background(63, 191, 191);
 
+  qrPage.draw();
+
+  // if (qrPage.foundImage) {
+    let f = extractFish(qrPage);
+    if (f) {
+      image(f, 0, 0, f.width, f.height);
+    }
+    // fishes.push(new Fish(extractedFish));
+  // }
+
+
   for (let fish of fishes) {
     fish.update();
     fish.draw();
   }
 }
 
+window.extractFish = function(qrPage) {
+  const markers = qrPage.markers || [];
+  let extractedFish = qrPage.foundImage;
+
+  if (markers.length < 3) {
+    return null;
+  }
+
+  let topRight = markers.find(m => m.id == 1);
+  let bottomRight = markers.find(m => m.id == 2);
+  let bottomLeft = markers.find(m => m.id == 3);
+  let topLeft = markers.find(m => m.id == 4);
+
+  let topRightY = topRight.corners[0].y;
+  let bottomRightY = bottomRight.corners[0].y;
+
+  let topRightX = topRight.corners[0].x;
+  let bottomRightX = bottomRight.corners[0].x;
+
+  let rightMidpointY = (topRightY + bottomRightY) / 2;
+  let rightMidpointX = (topRightX + bottomRightX) / 2;
+  
+  let topLeftY = topLeft.corners[0].y;
+  let bottomLeftY = bottomLeft.corners[0].y;
+
+  let topLeftX = topLeft.corners[0].x;
+  let bottomLeftX = bottomLeft.corners[0].x;
+
+  let leftMidpointY = (topLeftY + bottomLeftY) / 2;
+  let leftMidpointX = (topLeftX + bottomLeftX) / 2;
+
+
+  let manipulableImage = createGraphics(extractedFish.width, extractedFish.height);
+  manipulableImage.image(extractedFish, 0, 0, extractedFish.width, extractedFish.height);
+
+  console.log({
+    topRightX,
+    topLeftX,
+    topRightY,
+    bottomRightY
+  })
+  extractedFish = manipulableImage.get(topLeftX - 20  , topLeftY + 50, topRightX - topLeftX, bottomRightY - topRightY - 50); // diff of left and right here
+
+  // qrPage.reset();
+  return extractedFish;
+}
+
 window.keyPressed = function() {
   console.log('keyPressed');
   if (keyCode == 32) {
-    importPicture();
+    qrPage.importPicture();
   }
-}
-
-function importPicture() {
-  console.log('import');
-  let img;
-  // The capture element is initially smaller than it should be
-  if (!img || img.width !== capture.width) {
-    img = createImage(capture.width, capture.height);
-  }
-
-  img = extractDrawnImage(capture);
-
-  // img.copy(capture, 0, 0, capture.width, capture.height, 0, 0, img.width, img.height);
-  fishes.push(new Fish(img));
 }
 
 class Fish {

@@ -12,6 +12,7 @@ const fishes = [];
 let capture;
 
 const qrPage = new QRPage();
+let fishMask;
 
 window.setup = function() {
   console.log('in setup');
@@ -32,14 +33,13 @@ window.draw = function() {
 
   qrPage.draw();
 
-  // if (qrPage.foundImage) {
+  if (qrPage.foundImage) {
     let f = extractFish(qrPage);
     if (f) {
       image(f, 0, 0, f.width, f.height);
+      fishes.push(new Fish(f));
     }
-    // fishes.push(new Fish(extractedFish));
-  // }
-
+  }
 
   for (let fish of fishes) {
     fish.update();
@@ -82,15 +82,30 @@ window.extractFish = function(qrPage) {
   let manipulableImage = createGraphics(extractedFish.width, extractedFish.height);
   manipulableImage.image(extractedFish, 0, 0, extractedFish.width, extractedFish.height);
 
-  console.log({
-    topRightX,
-    topLeftX,
-    topRightY,
-    bottomRightY
-  })
-  extractedFish = manipulableImage.get(topLeftX - 20  , topLeftY + 50, topRightX - topLeftX, bottomRightY - topRightY - 50); // diff of left and right here
+  let fishWidth = topRightX - topLeftX;
+  let fishHeight = bottomRightY - topRightY - 50;
+  extractedFish = manipulableImage.get(topLeftX - 20  , topLeftY + 50, fishWidth, fishHeight); // diff of left and right here
 
-  // qrPage.reset();
+  fishMask = createGraphics(fishWidth, fishHeight);
+  fishMask.fill('rgba(0, 0, 0, 1)');
+  fishMask.ellipse(((2 * fishWidth) / 3) - 40, (fishHeight / 2) - 30, fishWidth * 0.7, fishHeight * 0.65);
+  fishMask.triangle(
+    // midpoint of tail
+    fishWidth * (1/3),
+    ((fishHeight / 2) - 25),
+
+    // top of tail
+    0,
+    (fishHeight / 2) - 80,
+
+    // bottom of tail
+    0,
+    (fishHeight / 2) + 40,
+  );
+
+  extractedFish.mask(fishMask);
+
+  qrPage.reset();
   return extractedFish;
 }
 
@@ -124,7 +139,7 @@ class Fish {
 
   draw() {
     if (this.img) {
-      image(this.img, this.x, this.y, this.width, this.width);
+      image(this.img, this.x, this.y, this.img.width * 0.5, this.img.height * 0.5);
     } else {
       // body
       fill(255);
